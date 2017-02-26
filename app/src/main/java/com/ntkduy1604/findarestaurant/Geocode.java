@@ -1,20 +1,9 @@
 package com.ntkduy1604.findarestaurant;
 
-import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.os.AsyncTask;
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.widget.ListView;
-import android.widget.Toast;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
 
 /**
  * Created by NTKDUY on 2/27/2017
@@ -25,17 +14,18 @@ import java.util.ArrayList;
 public class Geocode {
     private String TAG = MealType01.class.getSimpleName();
 
-    /**
-     * Google API key
-     */
+
+    //Google API key
     private static String google_api_key = "AIzaSyDvKEyT_x8m26ErkqMtppH3tIpqRXm1JOc";
 
     private String mUrl;
     private String mLatitude;
     private String mLongitude;
 
-    public Geocode(String vUrl) {
-        mUrl = vUrl;
+    public Geocode(String locationString) {
+        String googleUrl = "https://maps.googleapis.com/maps/api/geocode/json?address=";
+        mUrl = googleUrl + locationString;
+        // Create url with Google API key
         mUrl += "&key=" + google_api_key;
         new GetContacts().execute();
     }
@@ -51,7 +41,7 @@ public class Geocode {
     /**
      * Async task class to get json by making HTTP call
      */
-    public class GetContacts extends AsyncTask<Void, Void, Void> {
+    private class GetContacts extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected void onPreExecute() {
@@ -68,16 +58,12 @@ public class Geocode {
             if (jsonStr != null) {
                 try {
                     /**
-                     * Get contact object
+                     * Get latitude & longitude from geocode Google
                      */
                     JSONObject jsonObject = new JSONObject(jsonStr);
-                    // "results" is an array so it must be defined by JSONArray
                     JSONArray results = jsonObject.getJSONArray("results");
-                    // Parse the data of the first element in "results" array
                     JSONObject firstResultsObj = results.getJSONObject(0);
-                    // "geometry" is an object inside the first element of "results" array
                     JSONObject geometryJsonObj = firstResultsObj.getJSONObject("geometry");
-                    // "location" is an object inside geometry
                     JSONObject locationJsonObj = geometryJsonObj.getJSONObject("location");
 
                     mLatitude = locationJsonObj.getString("lat");
